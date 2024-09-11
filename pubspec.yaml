@@ -1,12 +1,10 @@
-name: nfc_host_card_emulation
+name: custom_nfc_host_card_emulation
 
 description: The Flutter plugin implementing Host Card Emulation (HCE) 
              with the APDU communication interface. 
 
 version: 1.1.0
 
-repository: https://github.com/zxxdanxxz/nfc_host_card_emulation
-homepage: https://github.com/zxxdanxxz/nfc_host_card_emulation
 
 environment:
   sdk: '>=2.19.0 <3.0.0'
