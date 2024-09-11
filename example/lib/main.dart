@@ -23,6 +23,7 @@ void main() async {
       // to which there are no responses will be added to the stream.
       // If `true`, command won't be added, otherwise will.
       listenOnlyConfiguredPorts: false,
+      hello: 'Hello from Flutter!',
     );
   }
 

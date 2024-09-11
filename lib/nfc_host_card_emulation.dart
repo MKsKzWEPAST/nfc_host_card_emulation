@@ -22,6 +22,7 @@ class NfcHce {
     required Uint8List aid,
     required bool permanentApduResponses,
     required bool listenOnlyConfiguredPorts,
+    required String hello,
   }) async {
     if (aid.length > 16 || aid.length < 5) {
       throw "AID length exception. Length must be from 5 to 16";
@@ -34,6 +35,7 @@ class NfcHce {
         'aid': aid,
         'cla': null,
         'ins': null,
+        'hello': hello,
       },
       _apduController,
     );
