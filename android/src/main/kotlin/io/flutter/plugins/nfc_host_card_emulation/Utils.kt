@@ -1,4 +1,5 @@
-package com.example.minimal_example
+package io.flutter.plugins.nfc_host_card_emulation
+
 
 class Utils {
     companion object {

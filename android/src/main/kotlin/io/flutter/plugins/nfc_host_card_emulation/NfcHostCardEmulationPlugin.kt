@@ -100,7 +100,7 @@ class NfcHostCardEmulationPlugin: FlutterPlugin, MethodCallHandler, ActivityAwar
 
 
       val hello = call.argument<String>("hello")
-      if(hello != null) {HCEService.hello = hello}
+      if(hello != null) {AndroidHceService.hello = hello}
 
       val AID = AndroidHceService.byteArrayToString(AndroidHceService.aid)
       Log.d("HCE", "HCE initialized. AID = $AID.")
