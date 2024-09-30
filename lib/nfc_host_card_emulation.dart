@@ -20,42 +20,42 @@ class NfcHce {
   /// to which there are no responses will be added to the stream. If `true`, command won't be added, otherwise will.
   static Future<void> init({
     required Uint8List aid,
-    required bool permanentApduResponses,
-    required bool listenOnlyConfiguredPorts,
     required String hello,
+    required Uint8List jsonArrayByte,
   }) async {
     if (aid.length > 16 || aid.length < 5) {
       throw "AID length exception. Length must be from 5 to 16";
     }
-
     await _platform.init(
       {
-        'permanentApduResponses': permanentApduResponses,
-        'listenOnlyConfiguredPorts': listenOnlyConfiguredPorts,
         'aid': aid,
-        'cla': null,
-        'ins': null,
         'hello': hello,
+        'jsonArrayByte': jsonArrayByte,
       },
       _apduController,
     );
   }
 
-  /// Adds an APDU response to the specified port (P2 byte in APDU command).
-  ///
-  /// Parameter 'data' mast be byte array.
-  static Future<void> addApduResponse(int port, List<int> data) async {
-    await _platform.addApduResponse(port, Uint8List.fromList(data));
-  }
-
-  /// Removes an APDU response from the specified port (P2 byte in APDU command)
-  static Future<void> removeApduResponse(int port) async {
-    await _platform.removeApduResponse(port);
-  }
 
   /// Checks device's NFC state
   static Future<NfcState> checkDeviceNfcState() async {
     return await _platform.checkDeviceNfcState();
+  }
+
+  static Future<String> getHello() async {
+    return await _platform.getHello();
+  }
+
+  static Future<void> setHello(String hello) async {
+    await _platform.setHello(hello);
+  }
+
+  static Future<void> setJsonArrayByte(Uint8List jsonArrayByte) async {
+    await _platform.setJsonArrayByte(jsonArrayByte);
+  }
+
+  static Future<Uint8List> getJsonArrayByte() async {
+    return await _platform.getJsonArrayByte();
   }
 }
 

@@ -43,21 +43,6 @@ class MethodChannelNfcHostCardEmulation extends NfcHostCardEmulationPlatform {
     );
   }
 
-  @override
-  Future<void> addApduResponse(int port, Uint8List data) async {
-    await methodChannel.invokeMethod('addApduResponse', {
-      'port': port,
-      'data': data,
-    });
-  }
-
-  @override
-  Future<void> removeApduResponse(int port) async {
-    await methodChannel.invokeMethod(
-      'removeApduResponse',
-      {'port': port},
-    );
-  }
 
   @override
   Future<NfcState> checkDeviceNfcState() async {
@@ -70,5 +55,25 @@ class MethodChannelNfcHostCardEmulation extends NfcHostCardEmulationPlatform {
       default:
         return NfcState.notSupported;
     }
+  }
+
+  @override
+  Future<String> getHello() async {
+    return await methodChannel.invokeMethod('getHello');
+  }
+
+  @override
+  Future<void> setHello(String hello) async {
+    await methodChannel.invokeMethod('setHello', {'hello': hello});
+  }
+
+  @override
+  Future<void> setJsonArrayByte(Uint8List jsonArrayByte) async {
+    await methodChannel.invokeMethod('setJsonArrayByte', {'jsonArrayByte': jsonArrayByte});
+  }
+
+  @override
+  Future<Uint8List> getJsonArrayByte() async {
+    return await methodChannel.invokeMethod('getJsonArrayByte');
   }
 }

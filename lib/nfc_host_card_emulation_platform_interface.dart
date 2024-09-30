@@ -34,12 +34,15 @@ abstract class NfcHostCardEmulationPlatform extends PlatformInterface {
     StreamController<NfcApduCommand> streamController,
   );
 
-  /// Adds an APDU response to the specified port
-  Future<void> addApduResponse(int port, Uint8List data);
-
-  /// Removes an APDU response from the specified port
-  Future<void> removeApduResponse(int port);
 
   /// Checks device's NFC state
   Future<NfcState> checkDeviceNfcState();
+
+  Future<String> getHello();
+
+  Future<void> setHello(String hello);
+
+  Future<void> setJsonArrayByte(Uint8List jsonArrayByte);
+
+  Future<Uint8List> getJsonArrayByte();
 }

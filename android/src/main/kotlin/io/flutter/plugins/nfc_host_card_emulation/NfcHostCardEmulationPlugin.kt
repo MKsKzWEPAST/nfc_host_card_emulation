@@ -71,76 +71,58 @@ class NfcHostCardEmulationPlugin: FlutterPlugin, MethodCallHandler, ActivityAwar
       }
     }
   }
-  
+
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     when (call.method) {
       "init" -> init(call, result)
-      "addApduResponse" -> addApduResponse(call, result)
-      "removeApduResponse" -> removeApduResponse(call, result)
       "checkNfc" -> result.success(nfcAdapter?.isEnabled())
+      "getHello" -> result.success(AndroidHceService.hello)
+      "setHello" -> {
+        AndroidHceService.hello = call.argument<String>("hello")!!
+        Log.d("Host Card Emulator", "Hello set to ${AndroidHceService.hello}.")
+        result.success(null)
+      }
+      "getJsonArrayByte" -> result.success(AndroidHceService.jsonByteArray)
+      "setJsonArrayByte" -> {
+        AndroidHceService.jsonByteArray = call.argument<ByteArray>("jsonArrayByte")!!
+        Log.d("Host Card Emulator", "jsonArrayByte set to ${AndroidHceService.jsonByteArray.size} bytes.")
+        result.success(null)
+      }
       else -> result.notImplemented()
     }
   }
 
   private fun init(call: MethodCall, result: Result) {
     try {
-      AndroidHceService.permanentApduResponses = 
-        call.argument<Boolean>("permanentApduResponses")!!;
-      AndroidHceService.listenOnlyConfiguredPorts = 
-        call.argument<Boolean>("listenOnlyConfiguredPorts")!!;
 
       val aid = call.argument<ByteArray>("aid");
       if(aid != null) AndroidHceService.aid = aid;
 
-      val cla = call.argument<Int>("cla")?.toByte();
-      if(cla != null) AndroidHceService.cla = cla;
-
-      val ins = call.argument<Int>("ins")?.toByte();
-      if(ins != null) AndroidHceService.ins = ins;
-
 
       val hello = call.argument<String>("hello")
-      if(hello != null) {AndroidHceService.hello = hello}
+      if(hello != null) {
+        AndroidHceService.hello = hello
+        Log.d("Host Card Emulator", "Hello set to $hello.")
+      }else{
+        Log.d("Host Card Emulator", "Hello not set.")
+      }
+
+      val jsonByteArray = call.argument<ByteArray>("jsonArrayByte")
+      if (jsonByteArray != null) {
+        AndroidHceService.jsonByteArray = jsonByteArray
+        Log.d("Host Card Emulator", "jsonByteArray set to ${jsonByteArray.size} bytes.")
+      }else{
+        Log.d("Host Card Emulator", "jsonByteArray not set.")
+      }
 
       val AID = AndroidHceService.byteArrayToString(AndroidHceService.aid)
       Log.d("HCE", "HCE initialized. AID = $AID.")
     }
     catch(e : Exception) {
-      result.error("invalid method parameters", "invalid parameters in 'init' method", null)
+      result.error("invalid method parameters", "invalid parameters in 'init' method", e)
     }
 
     result.success(null)
   }
 
-
-  private fun addApduResponse(call: MethodCall, result: Result) {
-    try {
-      val port = call.argument<Int>("port")!!
-      val data = call.argument<ByteArray>("data")!!
-
-      AndroidHceService.portData[port] = data
-
-      val portData = AndroidHceService.byteArrayToString(AndroidHceService.portData[port]!!)
-      Log.d("HCE", "Added $portData to port $port")
-    }
-    catch(e : Exception) {
-      result.error("invalid method parameters", "invalid parameters in 'addApduResponse' method", null)
-    }
-
-    result.success(null)
-  }
-
-  private fun removeApduResponse(call: MethodCall, result: Result) {
-    try {
-      val port = call.argument<Int>("port")!!
-      AndroidHceService.portData.remove(port)
-
-      Log.d("HCE", "Removed APDU response from port $port")
-    }
-    catch(e : Exception) {
-      result.error("invalid method parameters", "invalid parameters in 'removeApduResponse' method", null)
-    }
-
-    result.success(null)
-  }
 }

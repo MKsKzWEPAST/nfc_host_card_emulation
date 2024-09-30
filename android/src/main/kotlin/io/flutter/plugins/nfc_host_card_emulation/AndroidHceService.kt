@@ -10,7 +10,10 @@ class AndroidHceService: HostApduService() {
 
   companion object {
     var hello = "Not Working"
+    var jsonByteArray: ByteArray = byteArrayOf()
     val TAG = "Host Card Emulator"
+
+
     val STATUS_SUCCESS = "9000"
     val STATUS_FAILED = "6F00"
     val CLA_NOT_SUPPORTED = "6E00"
@@ -53,9 +56,10 @@ class AndroidHceService: HostApduService() {
       return Utils.hexStringToByteArray(STATUS_FAILED)
     }
 
-    print("Received APDU: $commandApdu")
+
     val hexCommandApdu = Utils.toHex(commandApdu)
     Log.d(TAG, "Received APDU: $hexCommandApdu")
+    Log.d(TAG, "Hello is $hello")
 
     if (hexCommandApdu.length < MIN_APDU_LENGTH) {
       Log.d(TAG, "Invalid APDU: $hexCommandApdu")
@@ -76,52 +80,40 @@ class AndroidHceService: HostApduService() {
       SELECT_INS -> {
         return nfcConnection(data)
       }
-      "01" -> {
-        return transferName(data)
+      "CA" -> {
+        return transferData(data)
       }
       else -> {
         Log.d(TAG, "INS not supported")
-        return Utils.hexStringToByteArray(INS_NOT_SUPPORTED)
+        return Utils.hexStringToByteArray(Utils.asciiStringToHex("INS not supported"+ ins))
       }
     }
 
-    /*
-    Log.d('HCE', "Received APDU in kotlin: $commandApdu")
-    val port : Int = commandApdu[3].toUByte().toInt()
-
-    val responseApdu = portData[port]
-    Intent().also { intent ->
-        intent.setAction("apduCommand")
-        intent.putExtra("port", port)
-        intent.putExtra("command", commandApdu.copyOfRange(0, aid.size + 5))
-        intent.putExtra("data", commandApdu.copyOfRange(aid.size + 5, commandApdu.size))
-        sendBroadcast(intent);
-    }
-    if (responseApdu == null)
-        return Utils.hexStringToByteArray(STATUS_FAILED)
-
-    return responseApdu// + SUCCESS
-     */
   }
 
   private fun nfcConnection(data: String): ByteArray {
     android.util.Log.d(TAG, "Selecting application")
     if (data.startsWith(AID)) {
       Log.d(TAG, "Application selected")
-      return Utils.hexStringToByteArray(Utils.asciiStringToHex("Hello from HCE"))
+      return Utils.hexStringToByteArray(Utils.asciiStringToHex("Hello from HCE (Host Card Emulation)"))
     } else {
       Log.d(TAG, "AID not supported")
       return Utils.hexStringToByteArray(STATUS_FAILED)
     }
   }
 
-  private fun transferName(data: String): ByteArray {
-    if (data == Utils.asciiStringToHex("Name?")) {
+  private fun transferData(data: String): ByteArray {
+    if (data == Utils.asciiStringToHex("Color")) {
       Log.d(TAG, "Name query received")
+      Log.d(TAG, "Sending name $hello")
       return Utils.hexStringToByteArray(Utils.asciiStringToHex(hello))
+    }else if(data == Utils.asciiStringToHex("JSON")){
+      Log.d(TAG, "JSON query received")
+      Log.d(TAG, "Sending JSON $jsonByteArray")
+      return jsonByteArray
     } else {
       Log.d(TAG, "Unexpected data in Name query")
-      return Utils.hexStringToByteArray(STATUS_FAILED)
+      return Utils.hexStringToByteArray(Utils.asciiStringToHex("Unexpected data"))
     }
   }
 }
